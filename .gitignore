@@ -2,4 +2,5 @@ videos/*
 notebooks/libopenh264-1.8.0-linux64.4.so
 notebooks/libopenh264-1.8.0-linux64.4.so.bz2.1
 notebooks/libopenh264-1.8.0-linux64.4.so.bz2
+notebooks/.ipynb_checkpoints
 alphafold/data/params/*
