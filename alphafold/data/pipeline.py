@@ -16,17 +16,15 @@
 
 import os
 from typing import Mapping, Optional, Sequence
-
-import numpy as np
-
-# Internal import (7716).
-
 from alphafold.common import residue_constants
 from alphafold.data import parsers
 from alphafold.data import templates
 from alphafold.data.tools import hhblits
 from alphafold.data.tools import hhsearch
 from alphafold.data.tools import jackhmmer
+import numpy as np
+
+# Internal import (7716).
 
 FeatureDict = Mapping[str, np.ndarray]
 
@@ -147,6 +145,10 @@ class DataPipeline:
     mgnify_out_path = os.path.join(msa_output_dir, 'mgnify_hits.sto')
     with open(mgnify_out_path, 'w') as f:
       f.write(jackhmmer_mgnify_result['sto'])
+
+    pdb70_out_path = os.path.join(msa_output_dir, 'pdb70_hits.hhr')
+    with open(pdb70_out_path, 'w') as f:
+      f.write(hhsearch_result)
 
     uniref90_msa, uniref90_deletion_matrix, _ = parsers.parse_stockholm(
         jackhmmer_uniref90_result['sto'])
