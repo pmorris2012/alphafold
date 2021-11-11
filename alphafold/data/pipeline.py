@@ -16,17 +16,16 @@
 
 import os
 from typing import Mapping, Optional, Sequence
-
-import numpy as np
-
-# Internal import (7716).
-
+from absl import logging
 from alphafold.common import residue_constants
 from alphafold.data import parsers
 from alphafold.data import templates
 from alphafold.data.tools import hhblits
 from alphafold.data.tools import hhsearch
 from alphafold.data.tools import jackhmmer
+import numpy as np
+
+# Internal import (7716).
 
 FeatureDict = Mapping[str, np.ndarray]
 
@@ -148,6 +147,10 @@ class DataPipeline:
     with open(mgnify_out_path, 'w') as f:
       f.write(jackhmmer_mgnify_result['sto'])
 
+    pdb70_out_path = os.path.join(msa_output_dir, 'pdb70_hits.hhr')
+    with open(pdb70_out_path, 'w') as f:
+      f.write(hhsearch_result)
+
     uniref90_msa, uniref90_deletion_matrix, _ = parsers.parse_stockholm(
         jackhmmer_uniref90_result['sto'])
     mgnify_msa, mgnify_deletion_matrix, _ = parsers.parse_stockholm(
@@ -193,5 +196,14 @@ class DataPipeline:
         deletion_matrices=(uniref90_deletion_matrix,
                            bfd_deletion_matrix,
                            mgnify_deletion_matrix))
+
+    logging.info('Uniref90 MSA size: %d sequences.', len(uniref90_msa))
+    logging.info('BFD MSA size: %d sequences.', len(bfd_msa))
+    logging.info('MGnify MSA size: %d sequences.', len(mgnify_msa))
+    logging.info('Final (deduplicated) MSA size: %d sequences.',
+                 msa_features['num_alignments'][0])
+    logging.info('Total number of templates (NB: this can include bad '
+                 'templates and is later filtered to top 4): %d.',
+                 templates_result.features['template_domain_names'].shape[0])
 
     return {**sequence_features, **msa_features, **templates_result.features}
